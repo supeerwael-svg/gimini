@@ -26,14 +26,12 @@ jobs:
 
       - name: Build Web App with Hardcoded Keys
         run: |
-          # كتابة مفاتيح الاتصال مباشرة في ملف الـ env لمنع أي خطأ في قراءتها
           echo "VITE_SUPABASE_URL=https://xpmbrohtyhllhcczbmfp.supabase.co" > .env
           echo "VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhwbWJyb2h0eWhsbGhjY3pibWZwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM0MDMzNzk0LCJleHAiOjIwNDE2MjEwODk1NTQzNH0.2bYqru2hKsfHvzgA_KoQ4z5TTD_DaDNboduZV27FWLc" >> .env
           
           npm install
           npm install @capacitor/core @capacitor/cli @capacitor/android
           npx vite build --base=./
-
       - name: Initialize and Sync Capacitor Android
         run: |
           if [ ! -f capacitor.config.ts ] && [ ! -f capacitor.config.json ]; then
