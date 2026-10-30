@@ -24,14 +24,15 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Install dependencies and build web app
+      - name: Inject Mobile Error Overlay & Build Web App
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
+          sed -i 's/<head>/<head><script>window.onerror=function(m,u,l){document.body.innerHTML="<div style=\\"color:#ff6b6b;background:#1a1a1a;padding:24px;direction:ltr;font-family:monospace;font-size:14px;\\"><h3>App Error:<\/h3><p>"+m+"<\/p><p>Line: "+l+"<\/p><\/div>";};window.onunhandledrejection=function(e){document.body.innerHTML="<div style=\\"color:#ff6b6b;background:#1a1a1a;padding:24px;direction:ltr;font-family:monospace;font-size:14px;\\"><h3>Promise Error:<\/h3><p>"+(e.reason?e.reason.message||e.reason:"Unknown")+"<\/p><\/div>";};<\/script>/' index.html
           npm install
           npm install @capacitor/core @capacitor/cli @capacitor/android
-          npm run build
+          npx vite build --base=./
 
       - name: Initialize and Sync Capacitor Android
         run: |
@@ -40,9 +41,8 @@ jobs:
           fi
           if [ ! -d android ]; then
             npx cap add android
-          else
-            npx cap sync android
           fi
+          npx cap sync android
 
       - name: Build Debug APK with Gradle
         working-directory: ./android
